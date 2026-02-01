@@ -1,0 +1,40 @@
+# Builds
+**/[Bb]in/
+**/[Oo]bj/
+**/[Oo]ut/
+**/[Dd]ebug/
+**/[Dd]ebugPublic/
+**/[Rr]elease/
+**/[Rr]eleases/
+**/x64/
+**/x86/
+**/[Bb]uild/
+**/bld/
+**/msbuild.log
+**/msbuild.err
+**/msbuild.wrn
+
+# IDEs and editors
+.vscode/*
+!.vscode/settings.json
+.idea/
+.vs/
+.fleet/
+.cr/
+
+# userfiles
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# misc
+*.swp
+*.*~
+#*.log
+#*.tmp
+#*.temp
+#*.cache
+#*.bak
+#*.old
+#*.orig
