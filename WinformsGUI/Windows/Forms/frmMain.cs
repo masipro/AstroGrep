@@ -1560,6 +1560,7 @@ namespace AstroGrep.Windows.Forms
 				UseNegation = chkNegation.Checked,
 				ReturnOnlyFileNames = chkFileNamesOnly.Checked,
 				SearchInSubfolders = chkRecurse.Checked,
+				SearchCompressedFiles = chkSearchCompressedFiles.Checked,
 				UseRegularExpressions = chkRegularExpressions.Checked,
 				UseWholeWordMatching = chkWholeWordOnly.Checked,
 				SearchText = cboSearchForText.Text,
@@ -1880,6 +1881,7 @@ namespace AstroGrep.Windows.Forms
 			chkWholeWordOnly.Checked = Core.SearchSettings.UseWholeWordMatching;
 			ResultsViewLineNumbersButton.Checked = LineNumbersMenuItem.Checked = txtHits.ShowLineNumbers = Core.SearchSettings.IncludeLineNumbers;
 			chkRecurse.Checked = Core.SearchSettings.UseRecursion;
+			chkSearchCompressedFiles.Checked = Core.SearchSettings.SearchCompressedFiles;
 			chkFileNamesOnly.Checked = Core.SearchSettings.ReturnOnlyFileNames;
 			ResultsContextLinesBeforeCombo.SelectedItem = Core.SearchSettings.ContextLinesBefore.ToString();
 			ResultsContextLinesAfterCombo.SelectedItem = Core.SearchSettings.ContextLinesAfter.ToString();
@@ -2203,9 +2205,19 @@ namespace AstroGrep.Windows.Forms
 				fileEncoding.Append("]");
 			}
 
+			string pathOptions = string.Empty;
+			if (searchSpec.SearchInSubfolders)
+			{
+				pathOptions = "[include sub folders]";
+			}
+			if (searchSpec.SearchCompressedFiles)
+			{
+				pathOptions = string.IsNullOrEmpty(pathOptions) ? "[include compressed files]" : string.Format("{0} [include compressed files]", pathOptions);
+			}
+
 			LogClient.Instance.Logger.Info("Search started in '{0}'{1} against {2}{3} for {4}{5}",
 			   searchSpec.StartFilePaths != null && searchSpec.StartFilePaths.Length > 0 ? string.Join(", ", searchSpec.StartFilePaths) : string.Join(", ", searchSpec.StartDirectories),
-			   searchSpec.SearchInSubfolders ? "[include sub folders]" : "",
+			   pathOptions,
 			   searchSpec.FileFilter,
 			   fileEncoding.ToString(),
 			   searchSpec.SearchText,
@@ -4331,6 +4343,7 @@ namespace AstroGrep.Windows.Forms
 			Core.SearchSettings.UseWholeWordMatching = chkWholeWordOnly.Checked;
 			Core.SearchSettings.IncludeLineNumbers = LineNumbersMenuItem.Checked;
 			Core.SearchSettings.UseRecursion = chkRecurse.Checked;
+			Core.SearchSettings.SearchCompressedFiles = chkSearchCompressedFiles.Checked;
 			Core.SearchSettings.ReturnOnlyFileNames = chkFileNamesOnly.Checked;
 			Core.SearchSettings.ContextLinesBefore = Convert.ToInt32(ResultsContextLinesBeforeCombo.SelectedItem);
 			Core.SearchSettings.ContextLinesAfter = Convert.ToInt32(ResultsContextLinesAfterCombo.SelectedItem);

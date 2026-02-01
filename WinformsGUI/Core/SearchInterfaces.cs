@@ -63,6 +63,9 @@ namespace AstroGrep.Core
          /// <summary>search in sub folders</summary>
          public bool SearchInSubfolders { get; set; }
 
+         /// <summary>search in compressed files (gz)</summary>
+         public bool SearchCompressedFiles { get; set; }
+
          /// <summary>search text will be used as a regular expression</summary>
          public bool UseRegularExpressions { get; set; }
 

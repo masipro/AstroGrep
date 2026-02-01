@@ -53,6 +53,7 @@ namespace AstroGrep.Core
       private bool caseSensitive = false;
       private bool wholeWord = false;
       private bool recurse = true;
+      private bool searchCompressedFiles = false;
       private bool fileNamesOnly = false;
       private bool negation = false;
       private bool lineNumbers = true;
@@ -148,6 +149,15 @@ namespace AstroGrep.Core
       {
          get { return MySettings.recurse; }
          set { MySettings.recurse = value; }
+      }
+
+      /// <summary>
+      /// Search in compressed files.
+      /// </summary>
+      static public bool SearchCompressedFiles
+      {
+         get { return MySettings.searchCompressedFiles; }
+         set { MySettings.searchCompressedFiles = value; }
       }
 
       /// <summary>

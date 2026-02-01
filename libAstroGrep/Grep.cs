@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -676,16 +677,30 @@ namespace libAstroGrep
 				bool processFile = true;
 				if (sourceFileFilter != null && !StriktMatch(SourceFile.Extension, sourceFileFilter.Trim(), allFileFilters))
 				{
-					processFile = false;
+					if (!IsCompressedFileMatchFilter(SourceFile, sourceFileFilter, allFileFilters))
+					{
+						processFile = false;
 
-					string filterValue = SourceFile.Extension;
-					FilterItem filterItem = new FilterItem(new FilterType(FilterType.Categories.File, FilterType.SubCategories.Extension), string.Empty, FilterType.ValueOptions.None, false, true);
-					OnFileFiltered(SourceFile, filterItem, filterValue);
+						string filterValue = SourceFile.Extension;
+						FilterItem filterItem = new FilterItem(new FilterType(FilterType.Categories.File, FilterType.SubCategories.Extension), string.Empty, FilterType.ValueOptions.None, false, true);
+						OnFileFiltered(SourceFile, filterItem, filterValue);
+					}
 				}
 
 				if (processFile)
 				{
 					SearchFile(SourceFile);
+				}
+			}
+
+			if (ShouldEnumerateCompressedFiles(sourceFileFilter, allFileFilters))
+			{
+				foreach (FileInfo SourceFile in sourceDirectory.EnumerateFiles("*.gz"))
+				{
+					if (IsCompressedFileMatchFilter(SourceFile, sourceFileFilter, allFileFilters))
+					{
+						SearchFile(SourceFile);
+					}
 				}
 			}
 
@@ -718,6 +733,11 @@ namespace libAstroGrep
 		{
 			try
 			{
+				if (IsGzipFile(SourceFile) && (SearchSpec == null || !SearchSpec.SearchCompressedFiles))
+				{
+					return;
+				}
+
 				// skip any files that are filtered out
 				if (ShouldFilterOut(SourceFile, SearchSpec, out FilterItem filterItem, out string filterValue))
 				{
@@ -804,6 +824,7 @@ namespace libAstroGrep
 			OnSearchingFile(file);
 
 			FileStream _stream = null;
+			Stream _contentStream = null;
 			StreamReader _reader = null;
 			int _lineNumber = 0;
 			MatchResult match = null;
@@ -816,6 +837,7 @@ namespace libAstroGrep
 			int _contextIndex = -1;
 			int _lastHit = 0;
 			int userFilterCount = 0;
+			bool isCompressed = SearchSpec != null && SearchSpec.SearchCompressedFiles && IsGzipFile(file);
 
 			try
 			{
@@ -970,7 +992,9 @@ namespace libAstroGrep
 							try
 							{
 								int sampleSize = EncodingOptions.GetSampleSizeByPerformance(SearchSpec.EncodingDetectionOptions != null ? SearchSpec.EncodingDetectionOptions.PerformanceSetting : EncodingOptions.Performance.Default);
-								sampleBytes = EncodingTools.ReadFileContentSample(_stream, sampleSize);
+								sampleBytes = isCompressed
+									? ReadCompressedFileContentSample(file, sampleSize)
+									: EncodingTools.ReadFileContentSample(_stream, sampleSize);
 							}
 							catch (Exception ex)
 							{
@@ -1029,7 +1053,8 @@ namespace libAstroGrep
 				{
 					_stream.Seek(0, SeekOrigin.Begin);
 				}
-				_reader = new StreamReader(_stream, encoding);
+				_contentStream = isCompressed ? (Stream)new GZipStream(_stream, CompressionMode.Decompress) : _stream;
+				_reader = new StreamReader(_contentStream, encoding);
 
 				_maxContextLines = SearchSpec.ContextLines + 1;
 
@@ -1297,6 +1322,9 @@ namespace libAstroGrep
 				if (_reader != null)
 					_reader.Close();
 
+				if (_reader == null && _contentStream != null)
+					_contentStream.Close();
+
 				if (_stream != null)
 					_stream.Close();
 			}
@@ -1382,6 +1410,165 @@ namespace libAstroGrep
 			}
 
 			return isStriktMatch;
+		}
+
+		private static bool IsGzipFile(FileInfo file)
+		{
+			return file != null && file.Extension.Equals(".gz", StringComparison.OrdinalIgnoreCase);
+		}
+
+		private static string GetCompressedInnerExtension(FileInfo file)
+		{
+			if (file == null)
+				return string.Empty;
+
+			var innerName = Path.GetFileNameWithoutExtension(file.Name);
+			return Path.GetExtension(innerName);
+		}
+
+		private static bool IsGzipFilter(string filter)
+		{
+			if (string.IsNullOrWhiteSpace(filter))
+				return false;
+
+			string trimmed = filter.Trim();
+			int index = trimmed.LastIndexOf('.');
+			string extension = index > -1 ? trimmed.Substring(index) : trimmed;
+
+			return string.Equals(extension, ".gz", StringComparison.OrdinalIgnoreCase);
+		}
+
+		private static string GetPrimaryCompressedFilter(List<string> allFileFilters)
+		{
+			if (allFileFilters == null || allFileFilters.Count == 0)
+				return string.Empty;
+
+			foreach (var filter in allFileFilters)
+			{
+				if (!IsGzipFilter(filter))
+					return filter;
+			}
+
+			return allFileFilters[0];
+		}
+
+		private bool ShouldEnumerateCompressedFiles(string sourceFileFilter, List<string> allFileFilters)
+		{
+			if (SearchSpec == null || !SearchSpec.SearchCompressedFiles)
+				return false;
+
+			if (string.IsNullOrWhiteSpace(sourceFileFilter))
+				return false;
+
+			string trimmed = sourceFileFilter.Trim();
+			if (string.Equals(trimmed, "*", StringComparison.OrdinalIgnoreCase) ||
+				string.Equals(trimmed, "*.*", StringComparison.OrdinalIgnoreCase))
+			{
+				return false;
+			}
+
+			if (allFileFilters != null && allFileFilters.Count > 0)
+			{
+				if (allFileFilters.Any(IsGzipFilter))
+					return false;
+
+				string primaryFilter = GetPrimaryCompressedFilter(allFileFilters);
+				if (string.IsNullOrEmpty(primaryFilter))
+					return false;
+
+				if (string.Equals(primaryFilter, "*", StringComparison.OrdinalIgnoreCase) ||
+					string.Equals(primaryFilter, "*.*", StringComparison.OrdinalIgnoreCase))
+				{
+					return false;
+				}
+
+				return string.Equals(trimmed, primaryFilter, StringComparison.OrdinalIgnoreCase);
+			}
+
+			return true;
+		}
+
+		private bool IsCompressedFileMatchFilter(FileInfo file, string sourceFileFilter, List<string> allFileFilters)
+		{
+			if (!IsGzipFile(file) || SearchSpec == null || !SearchSpec.SearchCompressedFiles)
+				return false;
+
+			string innerExtension = GetCompressedInnerExtension(file);
+
+			if (allFileFilters != null && allFileFilters.Count > 0)
+			{
+				foreach (var filter in allFileFilters)
+				{
+					if (IsGzipFilter(filter))
+						continue;
+
+					if (StriktMatch(innerExtension, filter, null))
+						return true;
+				}
+
+				return false;
+			}
+
+			if (string.IsNullOrWhiteSpace(sourceFileFilter))
+				return true;
+
+			return StriktMatch(innerExtension, sourceFileFilter, null) || StriktMatch(file.Extension, sourceFileFilter, null);
+		}
+
+		private static byte[] ReadCompressedFileContentSample(FileInfo file, int maxSize)
+		{
+			using (var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+			using (var gzipStream = new GZipStream(stream, CompressionMode.Decompress))
+			{
+				return ReadStreamContentSample(gzipStream, maxSize);
+			}
+		}
+
+		private static byte[] ReadStreamContentSample(Stream stream, int maxSize)
+		{
+			if (stream == null)
+				throw new ArgumentNullException("stream");
+
+			if (maxSize <= 0)
+				return new byte[0];
+
+			byte[] buffer = new byte[maxSize];
+			int bytesRead = 0;
+
+			while (bytesRead < maxSize)
+			{
+				int read = stream.Read(buffer, bytesRead, maxSize - bytesRead);
+				if (read <= 0)
+					break;
+
+				bytesRead += read;
+			}
+
+			if (bytesRead <= 0)
+				return new byte[0];
+
+			if (bytesRead < maxSize)
+			{
+				byte[] sample = new byte[bytesRead];
+				Array.Copy(buffer, sample, bytesRead);
+
+				byte[] newBuffer = new byte[maxSize];
+				int steps = maxSize / sample.Length;
+				for (int i = 0; i < steps; i++)
+				{
+					Array.Copy(sample, 0, newBuffer, sample.Length * i, sample.Length);
+				}
+
+				int rest = maxSize % sample.Length;
+				if (rest > 0)
+				{
+					Array.Copy(sample, 0, newBuffer, steps * sample.Length, rest);
+				}
+
+				return newBuffer;
+			}
+
+			return buffer;
 		}
 
 		/// <summary>

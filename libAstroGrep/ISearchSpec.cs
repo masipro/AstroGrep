@@ -46,6 +46,9 @@ namespace libAstroGrep
       /// <summary>Use of directory recursion for grep</summary>
       bool SearchInSubfolders { get; }
 
+      /// <summary>Use of compressed file searching (gz)</summary>
+      bool SearchCompressedFiles { get; }
+
       /// <summary>Use of regular expressions for grep</summary>
       bool UseRegularExpressions { get; }
 

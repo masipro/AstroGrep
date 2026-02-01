@@ -9,6 +9,7 @@
       <control name="chkNegation" value="&amp;Negation" tooltip="Find the files without the Search Text in them" />
       <control name="chkFileNamesOnly" value="Show File Names &amp;Only" tooltip="Show names but not contents of files that have matches (may be faster on large files)" />
       <control name="chkRecurse" value="Search Su&amp;bfolders" tooltip="Search in subfolders" />
+      <control name="chkSearchCompressedFiles" value="Search &amp;compressed files" tooltip="Search inside compressed .gz files" />
       <control name="chkWholeWordOnly" value="&amp;Whole Word" tooltip="Only match entire words (not parts of words)" />
       <control name="chkCaseSensitive" value="&amp;Case Sensitive" tooltip="Match upper and lower case letters exactly" />
       <control name="chkRegularExpressions" value="Regular E&amp;xpressions" tooltip="Use &quot;regular expression&quot; matching" />
