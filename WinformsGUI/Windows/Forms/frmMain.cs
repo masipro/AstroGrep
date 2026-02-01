@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -128,6 +129,8 @@ namespace AstroGrep.Windows.Forms
 		/// <history>
 		/// [Curtis_Beard]		09/26/2012	Initial: 3572487
 		/// </history>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public CommandLineProcessing.CommandLineArguments CommandLineArgs
 		{
 			get { return __CommandLineArgs; }

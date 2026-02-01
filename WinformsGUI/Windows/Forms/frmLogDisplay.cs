@@ -110,6 +110,8 @@ namespace AstroGrep.Windows.Forms
 		/// [Curtis_Beard]	   12/06/2012	ADD: 1741735, initial dialog for filterable log items viewer.
 		/// [Curtis_Beard]	   11/11/2014	CHG: make nullable so that null means show all
 		/// </history>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public LogItem.LogItemTypes? DefaultFilterType
 		{
 			get;
@@ -119,6 +121,8 @@ namespace AstroGrep.Windows.Forms
 		/// <summary>
 		/// Collection of messages to display
 		/// </summary>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public LogItems LogItems
 		{
 			get;

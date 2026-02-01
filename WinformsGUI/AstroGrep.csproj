@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.21022</ProductVersion>
@@ -19,7 +19,14 @@
     <DelaySign>false</DelaySign>
     <OutputType>WinExe</OutputType>
     <RootNamespace>AstroGrep</RootNamespace>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
     <StartupObject>AstroGrep.Windows.Program</StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -41,7 +48,6 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -105,57 +111,17 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="CommandLine, Version=2.9.1.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommandLineParser.2.9.1\lib\net45\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="DocumentFormat.OpenXml, Version=2.17.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
-      <HintPath>..\packages\DocumentFormat.OpenXml.2.17.1\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
-    </Reference>
-    <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
-      <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
-    </Reference>
-    <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
-      <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.3.50, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
-      <HintPath>..\packages\AvalonEdit.6.1.3.50\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=1.3.3.11, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpZipLib.1.3.3\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.5.0.2\lib\net45\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System">
-      <Name>System</Name>
-    </Reference>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data">
-      <Name>System.Data</Name>
-    </Reference>
-    <Reference Include="System.Drawing">
-      <Name>System.Drawing</Name>
-    </Reference>
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Windows.Forms">
-      <Name>System.Windows.Forms</Name>
-    </Reference>
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml">
-      <Name>System.XML</Name>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="TagLibSharp, Version=2.2.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
-      <HintPath>..\packages\TagLibSharp.2.2.0\lib\net45\TagLibSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="WindowsFormsIntegration" />
+    <PackageReference Include="AvalonEdit" Version="6.1.3.50" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.17.1" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelNumberFormat" Version="1.1.0" />
+    <PackageReference Include="NLog" Version="5.0.2" />
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+    <PackageReference Include="TagLibSharp" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.GC.AllowVeryLargeObjects" Value="true" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\GeneralSettingsReset.cs" />
@@ -505,31 +471,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>copy "$(ProjectDir)Images\AstroGrep_256x256.png" "$(TargetDir)" /y</PostBuildEvent>
-  </PropertyGroup>
+  <Target Name="CopyAppIcon" AfterTargets="Build">
+    <PropertyGroup>
+      <CopyAppIconDestination Condition="'$(TargetDir)' != ''">$(TargetDir)</CopyAppIconDestination>
+      <CopyAppIconDestination Condition="'$(TargetDir)' == ''">$(MSBuildProjectDirectory)\$(OutputPath)</CopyAppIconDestination>
+    </PropertyGroup>
+    <MakeDir Directories="$(CopyAppIconDestination)" Condition="'$(CopyAppIconDestination)' != '' and !Exists('$(CopyAppIconDestination)')" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\Images\AstroGrep_256x256.png"
+          DestinationFolder="$(CopyAppIconDestination)"
+          SkipUnchangedFiles="true"
+          Condition="'$(CopyAppIconDestination)' != '' and Exists('$(MSBuildProjectDirectory)\Images\AstroGrep_256x256.png')" />
+  </Target>
 </Project>

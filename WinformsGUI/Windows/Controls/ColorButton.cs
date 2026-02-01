@@ -129,6 +129,8 @@ namespace AstroGrep.Windows.Controls
 			/// <history>
 			/// 	[Curtis_Beard]	   11/18/2005	Created
 			/// </history>
+			[Browsable(false)]
+			[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 			public Color SelectedColor
 			{
 				get { return __selectedColor; }
@@ -404,8 +406,10 @@ namespace AstroGrep.Windows.Controls
 		/// 	[Curtis_Beard]	   11/18/2005	Created
 		/// </history>
 		[Category("Appearance"), 
-			DefaultValue(true), 
+			DefaultValue(typeof(Color), "Black"), 
 			Description("The currently selected color.")]
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public Color SelectedColor
 		{
 			get { return __selectedColor; }

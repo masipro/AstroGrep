@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
@@ -13,6 +14,8 @@ namespace AstroGrep.Windows.Forms
 		/// <summary>
 		/// Determines if the common logic for color changes is applied at the form level.
 		/// </summary>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ProcessColorChange { get; set; } = true;
 
 		/// <summary>

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
+using System.Text.Json;
 
 using AstroGrep.Common;
 using AstroGrep.Common.Logging;
@@ -46,6 +45,10 @@ namespace libAstroGrep.EncodingDetection.Caching
       private EncodingOptions.Performance currentPerformance = EncodingOptions.Performance.Default;
       private static EncodingCache instance;
       private int capacity = 150000;
+      private static readonly JsonSerializerOptions CacheSerializerOptions = new JsonSerializerOptions
+      {
+         IncludeFields = true
+      };
 
       /// <summary>
       /// Retrieves the current instance of the EncodingCache.
@@ -183,14 +186,11 @@ namespace libAstroGrep.EncodingDetection.Caching
             {
                using (var deflate = new DeflateStream(fs, CompressionMode.Compress))
                {
-                  // Construct a BinaryFormatter and use it to serialize the data to the stream.
-                  BinaryFormatter formatter = new BinaryFormatter();
-
-                  formatter.Serialize(deflate, cache);
+                  JsonSerializer.Serialize(deflate, cache, CacheSerializerOptions);
                }
             }
          }
-         catch (SerializationException e)
+         catch (JsonException e)
          {
             LogClient.Instance.Logger.Error("Serialization error: {0}", LogClient.GetAllExceptions(e));
          }
@@ -227,18 +227,16 @@ namespace libAstroGrep.EncodingDetection.Caching
             {
                using (FileStream fs = new FileStream(path, FileMode.Open))
                {
-                  using (var deflate = new DeflateStream(fs, CompressionMode.Decompress))
-                  {
-                     BinaryFormatter formatter = new BinaryFormatter();
-
-                     // Deserialize the cache from the file and  
-                     // assign the reference to the local variable.
+               using (var deflate = new DeflateStream(fs, CompressionMode.Decompress))
+               {
                      if (deflate.CanSeek)
                      {
                         deflate.Seek(0, SeekOrigin.Begin);
                      }
-                     cache = (Dictionary<string, EncodingCacheItem>)formatter.Deserialize(deflate);
+                     cache = JsonSerializer.Deserialize<Dictionary<string, EncodingCacheItem>>(deflate, CacheSerializerOptions)
+                        ?? new Dictionary<string, EncodingCacheItem>(capacity);
 
+                     lruList.Clear();
                      // load up lrulist with all keys so they are insync
                      foreach (var key in cache.Keys)
                      {
@@ -253,7 +251,7 @@ namespace libAstroGrep.EncodingDetection.Caching
                }
             }
          }
-         catch (SerializationException e)
+         catch (JsonException e)
          {
             LogClient.Instance.Logger.Error("Deserialization error: {0}", LogClient.GetAllExceptions(e));
          }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AdminProcess</RootNamespace>
     <AssemblyName>AstroGrep.AdminProcess</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
     <FileAlignment>512</FileAlignment>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <FileUpgradeFlags>
@@ -50,9 +55,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -68,7 +70,6 @@
     <None Include="App.config" />
     <None Include="app.manifest" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -77,7 +78,14 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)WinformsGUI\$(OutDir)\$(TargetFileName)" /Y
-copy "$(TargetPath).config" "$(SolutionDir)WinformsGUI\$(OutDir)\$(TargetFileName).config" /Y</PostBuildEvent>
+    <AdminProcessCopyDir Condition="'$(SolutionDir)' != ''">$(SolutionDir)WinformsGUI\$(OutputPath)</AdminProcessCopyDir>
+    <AdminProcessCopyDir Condition="'$(SolutionDir)' == ''">$(MSBuildProjectDirectory)\..\WinformsGUI\$(OutputPath)</AdminProcessCopyDir>
   </PropertyGroup>
+  <Target Name="CopyAdminProcessOutput" AfterTargets="Build" Condition="'$(AdminProcessCopyDir)' != ''">
+    <ItemGroup>
+      <AdminProcessOutputFiles Include="$(TargetDir)$(AssemblyName).*" />
+    </ItemGroup>
+    <MakeDir Directories="$(AdminProcessCopyDir)" Condition="!Exists('$(AdminProcessCopyDir)')" />
+    <Copy SourceFiles="@(AdminProcessOutputFiles)" DestinationFolder="$(AdminProcessCopyDir)" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

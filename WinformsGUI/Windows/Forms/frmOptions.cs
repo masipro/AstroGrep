@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -103,6 +104,8 @@ namespace AstroGrep.Windows.Forms
 		/// <history>
 		/// [Curtis_Beard]		08/26/2022	Created
 		/// </history>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool IsThemeChange { get; set; } = false;
 
 		/// <summary>

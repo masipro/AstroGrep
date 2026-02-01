@@ -62,8 +62,6 @@ namespace AstroGrep.Windows
 
 		private static readonly IntPtr HKEY_CURRENT_USER = new IntPtr(unchecked((int)0x80000001));
 
-		private static readonly IntPtr HKEY_DYN_DATA = new IntPtr(unchecked((int)0x80000006));
-
 		private static readonly IntPtr HKEY_LOCAL_MACHINE = new IntPtr(unchecked((int)0x80000002));
 
 		private static readonly IntPtr HKEY_PERFORMANCE_DATA = new IntPtr(unchecked((int)0x80000004));
@@ -265,10 +263,6 @@ namespace AstroGrep.Windows
 
 				case RegistryHive.CurrentUser:
 					_registryHive = HKEY_CURRENT_USER;
-					break;
-
-				case RegistryHive.DynData:
-					_registryHive = HKEY_DYN_DATA;
 					break;
 
 				case RegistryHive.LocalMachine:

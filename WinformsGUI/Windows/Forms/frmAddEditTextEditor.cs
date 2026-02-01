@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 using AstroGrep.Common;
@@ -63,6 +64,8 @@ namespace AstroGrep.Windows.Forms
 		/// <history>
 		/// [Curtis_Beard]		10/12/2012	Created
 		/// </history>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public TextEditor Editor
 		{
 			get { return __Editor; }
@@ -80,6 +83,8 @@ namespace AstroGrep.Windows.Forms
 		/// [Curtis_Beard]		04/20/2007	Created
 		/// [Curtis_Beard]		08/13/2014	FIX: better detection of file types
 		/// </history>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public List<string> ExistingFileTypes
 		{
 			get { return __ExistingFileTypes; }
@@ -92,6 +97,8 @@ namespace AstroGrep.Windows.Forms
 		/// <history>
 		/// [Curtis_Beard]		07/21/2006	Created
 		/// </history>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool IsAdd
 		{
 			set { __Add = value; }
@@ -103,6 +110,8 @@ namespace AstroGrep.Windows.Forms
 		/// <history>
 		/// [Curtis_Beard]		07/21/2006	Created
 		/// </history>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool IsAllTypesDefined
 		{
 			set

@@ -61,6 +61,8 @@ namespace AstroGrep.Windows.Forms
 		/// <summary>
 		/// The currently selected FileEncoding.
 		/// </summary>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public FileEncoding SelectedFileEncoding
 		{
 			get;
